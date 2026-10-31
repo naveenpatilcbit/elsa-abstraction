@@ -1,0 +1,78 @@
+Generated CreateInvoiceActivity: Customer, Lines, Tax → Invoice
+Generated PlanShipmentActivity: Invoice, Origin, Packages, Rules → Shipment
+SCENARIO 1 — invoice from three earlier Elsa steps
+{
+  "Id": "INV-DEMO-001",
+  "Customer": {
+    "Id": "C-42",
+    "Email": "buyer@example.test",
+    "BillingAddress": {
+      "City": "Bengaluru",
+      "PostalCode": "560001"
+    }
+  },
+  "Lines": [
+    {
+      "Sku": "KEYBOARD",
+      "Quantity": 2,
+      "UnitPrice": 1500
+    },
+    {
+      "Sku": "MOUSE",
+      "Quantity": 1,
+      "UnitPrice": 500
+    }
+  ],
+  "Totals": {
+    "Subtotal": 3500,
+    "Tax": 630.00,
+    "GrandTotal": 4130.00,
+    "Currency": "INR"
+  }
+}
+SCENARIO 2 — shipment using invoice + warehouse + package list
+{
+  "InvoiceId": "INV-DEMO-001",
+  "Destination": {
+    "City": "Bengaluru",
+    "PostalCode": "560001"
+  },
+  "OriginCode": "WH-BLR",
+  "TotalWeightKg": 3.0,
+  "SignatureRequired": true,
+  "Packages": [
+    {
+      "Label": "Box A",
+      "WeightKg": 2.5,
+      "Size": {
+        "Length": 40,
+        "Width": 30,
+        "Height": 20
+      },
+      "Skus": [
+        "KEYBOARD"
+      ]
+    },
+    {
+      "Label": "Box B",
+      "WeightKg": 0.5,
+      "Size": {
+        "Length": 15,
+        "Width": 10,
+        "Height": 8
+      },
+      "Skus": [
+        "MOUSE"
+      ]
+    }
+  ]
+}
+PASS: Invoice totals and nested output
+PASS: Shipment receives prior nested output and computed rule
+PASS: Nested list and dimensions survive handover
+PASS: Elsa stops on invalid nested input and records its field path
+REJECTED: Lines[1].Quantity must be greater than zero.
+PASS: Same task runs outside Elsa
+PASS: Unknown nested SKU is rejected
+PASS: Cancellation reaches the independent task
+ALL 7 CHECKS PASSED
