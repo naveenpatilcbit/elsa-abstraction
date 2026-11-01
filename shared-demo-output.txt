@@ -1,0 +1,86 @@
+SCENARIO 1: RunTask(CreateInvoice.v1)
+{
+  "id": "INV-DEMO-001",
+  "customer": {
+    "id": "C-42",
+    "email": "buyer@example.test",
+    "billingAddress": {
+      "city": "Bengaluru",
+      "postalCode": "560001"
+    }
+  },
+  "lines": [
+    {
+      "sku": "KEYBOARD",
+      "quantity": 2,
+      "unitPrice": 1500
+    },
+    {
+      "sku": "MOUSE",
+      "quantity": 1,
+      "unitPrice": 500
+    }
+  ],
+  "totals": {
+    "subtotal": 3500,
+    "tax": 630.00,
+    "grandTotal": 4130.00,
+    "currency": "INR"
+  }
+}
+SCENARIO 2: RunTask(PlanShipment.v1)
+{
+  "invoiceId": "INV-DEMO-001",
+  "destination": {
+    "city": "Bengaluru",
+    "postalCode": "560001"
+  },
+  "originCode": "WH-BLR",
+  "totalWeightKg": 3.0,
+  "signatureRequired": true,
+  "packages": [
+    {
+      "label": "Box A",
+      "weightKg": 2.5,
+      "size": {
+        "length": 40,
+        "width": 30,
+        "height": 20
+      },
+      "skus": [
+        "KEYBOARD"
+      ]
+    },
+    {
+      "label": "Box B",
+      "weightKg": 0.5,
+      "size": {
+        "length": 15,
+        "width": 10,
+        "height": 8
+      },
+      "skus": [
+        "MOUSE"
+      ]
+    }
+  ]
+}
+PASS: Both tasks run through the same activity without incidents
+PASS: Invoice total is 4130
+PASS: Previous JSON output drives shipment rules
+PASS: Nested address, package list, and dimensions survive JSON handover
+PASS: Unknown task: flow stops with a useful error
+  Unknown task 'Missing.v1'.
+PASS: Missing field: flow stops with a useful error
+  CreateInvoice.v1: invalid input at $: JSON deserialization for type 'Demo.Tasks.InvoiceInput' was missing required properties including: 'tax'.
+PASS: Wrong nested type: flow stops with a useful error
+  CreateInvoice.v1: invalid input at $.lines[0].quantity: The JSON value could not be converted to Demo.Tasks.Line. Path: $.lines[0].quantity | LineNumber: 0 | BytePositionInLine: 156.
+PASS: Invalid business value: flow stops with a useful error
+  Lines[0].Quantity must be greater than zero.
+PASS: Null nested object: flow stops with a useful error
+  CreateInvoice.v1: invalid input at $.customer.billingAddress: The constructor parameter 'BillingAddress' on type 'Demo.Tasks.Customer' doesn't allow null values. Consider updating its nullability annotation. Path: $.customer.billingAddress | LineNumber: 0 | BytePositionInLine: 75.
+PASS: Unexpected field: flow stops with a useful error
+  CreateInvoice.v1: invalid input at $.typo: The JSON property 'typo' could not be mapped to any .NET member contained in type 'Demo.Tasks.InvoiceInput'.
+PASS: Duplicate task names rejected
+PASS: Cancelled call rejected before dispatch
+ALL 12 CHECKS PASSED

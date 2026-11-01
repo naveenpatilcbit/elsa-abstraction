@@ -1,0 +1,65 @@
+{
+  "activities": [
+    {
+      "customer": {
+        "typeName": "UnregisteredClrType:Demo.Tasks.Customer, Demo.Tasks",
+        "expression": {
+          "type": "JavaScript",
+          "value": "({ Id: \"C-42\", Email: \"buyer@example.test\", BillingAddress: { City: \"Bengaluru\", PostalCode: \"560001\" } })  "
+        }
+      },
+      "lines": {
+        "typeName": "UnregisteredClrType:System.Collections.Generic.List`1[[Demo.Tasks.Line, Demo.Tasks]], System.Private.CoreLib",
+        "expression": {
+          "type": "JavaScript",
+          "value": "[{ Sku: \"KEYBOARD\", Quantity: 2, UnitPrice: 1500 }, { Sku: \"MOUSE\", Quantity: 1, UnitPrice: 500 }]"
+        }
+      },
+      "tax": {
+        "typeName": "UnregisteredClrType:Demo.Tasks.TaxRules, Demo.Tasks",
+        "expression": {
+          "type": "JavaScript",
+          "value": "({ Rate: 0.18, Currency: \"INR\" })"
+        }
+      },
+      "result": {
+        "typeName": "Demo.Tasks.Invoice, Demo.Tasks",
+        "memoryReference": {
+          "id": "b405a62f536bb591:output-result"
+        }
+      },
+      "id": "b405a62f536bb591",
+      "nodeId": "Workflow1:d25c20b8bc167467:b405a62f536bb591",
+      "name": "CreateInvoiceActivity1",
+      "type": "Demo.Elsa.Generated.CreateInvoiceActivity",
+      "version": 1,
+      "customProperties": {
+        "canStartWorkflow": false,
+        "runAsynchronously": false
+      },
+      "metadata": {
+        "designer": {
+          "position": {
+            "x": 557,
+            "y": 323
+          },
+          "size": {
+            "width": 246.96875,
+            "height": 54
+          }
+        }
+      }
+    }
+  ],
+  "variables": [],
+  "id": "d25c20b8bc167467",
+  "nodeId": "Workflow1:d25c20b8bc167467",
+  "name": "Sequence1",
+  "type": "Elsa.Sequence",
+  "version": 1,
+  "customProperties": {
+    "canStartWorkflow": false,
+    "runAsynchronously": false
+  },
+  "metadata": {}
+}

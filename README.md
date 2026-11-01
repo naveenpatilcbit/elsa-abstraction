@@ -1,8 +1,29 @@
-# Elsa abstraction demo
+# Elsa task abstraction demos
 
 Real Elsa **3.8.0**, running on .NET 9. No wrapper is written by hand.
 
-## Run
+Two options are recorded for review; neither is a final design choice.
+
+| Option | Design note | Run |
+|---|---|---|
+| 1: Generated adapters | [How it works](docs/option-1-generated-adapters.md) | `./run-demo.sh` |
+| 2: Dynamic activities | [How it works and compares](docs/option-2-dynamic-activities.md) | `./run-dynamic-demo.sh` |
+
+Option 2 reuses the same plain C# tasks with one shared activity and a provider. It generates no adapter source files. Its results are in [dynamic-demo-output.txt](dynamic-demo-output.txt).
+
+The walkthrough below describes **Option 1**.
+
+## Other demo: Option 3 — Shared RunTask
+
+A second runnable demo uses **one shared activity** and a JSON payload, with no generated adapters. It reuses the same business tasks. Read the [Option 3 walkthrough](docs/option-3-shared-runtask.md).
+
+```bash
+./run-shared-demo.sh
+```
+
+It runs the invoice and shipment scenarios plus 12 checks. See [its captured output](shared-demo-output.txt).
+
+## Run Option 1
 
 ```bash
 ./run-demo.sh

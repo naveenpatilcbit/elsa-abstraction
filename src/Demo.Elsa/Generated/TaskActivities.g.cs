@@ -7,29 +7,36 @@ using Elsa.Workflows.Models;
 namespace Demo.Elsa.Generated;
 public sealed class CreateInvoiceActivity : CodeActivity
 {
-    [Input] public Input<global::Demo.Tasks.Customer> Customer { get; set; } = default!;
-    [Input] public Input<global::System.Collections.Generic.List<global::Demo.Tasks.Line>> Lines { get; set; } = default!;
-    [Input] public Input<global::Demo.Tasks.TaxRules> Tax { get; set; } = default!;
+    [Input] public Input<global::Demo.Tasks.Customer> @Customer { get; set; } = default!;
+    [Input] public Input<global::System.Collections.Generic.List<global::Demo.Tasks.Line>> @Lines { get; set; } = default!;
+    [Input] public Input<global::Demo.Tasks.TaxRules> @Tax { get; set; } = default!;
     [Output] public Output<global::Demo.Tasks.Invoice> Result { get; set; } = new();
     protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
     {
+        if (@Customer is null) throw new ArgumentException("Missing input: Customer.");
+        if (@Lines is null) throw new ArgumentException("Missing input: Lines.");
+        if (@Tax is null) throw new ArgumentException("Missing input: Tax.");
         var task = context.GetRequiredService<global::Demo.Tasks.IAppTask<global::Demo.Tasks.InvoiceInput, global::Demo.Tasks.Invoice>>();
-        var input = new global::Demo.Tasks.InvoiceInput(context.Get(Customer)!, context.Get(Lines)!, context.Get(Tax)!);
+        var input = new global::Demo.Tasks.InvoiceInput(context.Get(@Customer)!, context.Get(@Lines)!, context.Get(@Tax)!);
         var result = await task.ExecuteAsync(input, context.CancellationToken);
         context.Set(Result, result);
     }
 }
 public sealed class PlanShipmentActivity : CodeActivity
 {
-    [Input] public Input<global::Demo.Tasks.Invoice> Invoice { get; set; } = default!;
-    [Input] public Input<global::Demo.Tasks.Warehouse> Origin { get; set; } = default!;
-    [Input] public Input<global::System.Collections.Generic.List<global::Demo.Tasks.Package>> Packages { get; set; } = default!;
-    [Input] public Input<global::Demo.Tasks.DeliveryRules> Rules { get; set; } = default!;
+    [Input] public Input<global::Demo.Tasks.Invoice> @Invoice { get; set; } = default!;
+    [Input] public Input<global::Demo.Tasks.Warehouse> @Origin { get; set; } = default!;
+    [Input] public Input<global::System.Collections.Generic.List<global::Demo.Tasks.Package>> @Packages { get; set; } = default!;
+    [Input] public Input<global::Demo.Tasks.DeliveryRules> @Rules { get; set; } = default!;
     [Output] public Output<global::Demo.Tasks.Shipment> Result { get; set; } = new();
     protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
     {
+        if (@Invoice is null) throw new ArgumentException("Missing input: Invoice.");
+        if (@Origin is null) throw new ArgumentException("Missing input: Origin.");
+        if (@Packages is null) throw new ArgumentException("Missing input: Packages.");
+        if (@Rules is null) throw new ArgumentException("Missing input: Rules.");
         var task = context.GetRequiredService<global::Demo.Tasks.IAppTask<global::Demo.Tasks.ShipmentInput, global::Demo.Tasks.Shipment>>();
-        var input = new global::Demo.Tasks.ShipmentInput(context.Get(Invoice)!, context.Get(Origin)!, context.Get(Packages)!, context.Get(Rules)!);
+        var input = new global::Demo.Tasks.ShipmentInput(context.Get(@Invoice)!, context.Get(@Origin)!, context.Get(@Packages)!, context.Get(@Rules)!);
         var result = await task.ExecuteAsync(input, context.CancellationToken);
         context.Set(Result, result);
     }

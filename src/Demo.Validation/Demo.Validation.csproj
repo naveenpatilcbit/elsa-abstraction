@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net9.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Elsa" Version="3.8.0" />
+    <ProjectReference Include="../Demo.Elsa/Demo.Elsa.csproj" />
+    <ProjectReference Include="../Demo.Generator/Demo.Generator.csproj" />
+    <ProjectReference Include="../Demo.Validation.Tasks/Demo.Validation.Tasks.csproj" />
+  </ItemGroup>
+</Project>

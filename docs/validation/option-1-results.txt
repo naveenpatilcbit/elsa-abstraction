@@ -1,0 +1,138 @@
+$ dotnet build src/Demo.Validation.Tasks -v quiet
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:00.69
+
+$ dotnet run --project src/Demo.Generator -- src/Demo.Elsa/Generated/TaskActivities.g.cs
+Generated adapters from Demo.Tasks → src/Demo.Elsa/Generated/TaskActivities.g.cs
+
+$ dotnet run --project src/Demo.Generator -- src/Demo.Validation/Generated/ValidationActivities.g.cs src/Demo.Validation.Tasks/bin/Debug/net9.0/Demo.Validation.Tasks.dll Demo.Validation.Generated
+Generated adapters from Demo.Validation.Tasks → src/Demo.Validation/Generated/ValidationActivities.g.cs
+
+$ dotnet build src/Demo.Validation -v quiet
+/Users/naveenkumarpatil/Documents/ChatGPT/Elsa Abstraction/src/Demo.Validation/Program.cs(138,32): warning CS8603: Possible null reference return. [/Users/naveenkumarpatil/Documents/ChatGPT/Elsa Abstraction/src/Demo.Validation/Demo.Validation.csproj]
+Build succeeded.
+/Users/naveenkumarpatil/Documents/ChatGPT/Elsa Abstraction/src/Demo.Validation/Program.cs(138,32): warning CS8603: Possible null reference return. [/Users/naveenkumarpatil/Documents/ChatGPT/Elsa Abstraction/src/Demo.Validation/Demo.Validation.csproj]
+    1 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:02.49
+
+$ dotnet run --project src/Demo.Validation --no-build -- checks
+PASS: All input types arrive unchanged
+PASS: Dates, enum, nulls, dictionary, array and nested list survive save/load
+Reused adapter finished.
+PASS: Repeated activity reads prior nested output and builds a new list
+Workflow input received.
+PASS: Task input can come from workflow input
+PASS: Missing binding names the field
+PASS: Invalid nested value names its path
+PASS: Scoped dependency is reused without mixing task inputs
+PASS: 20 concurrent workflow runs have separate scopes and inputs
+Both branches finished.
+PASS: Fork branches keep separate task outputs
+PASS: Post-write failure reaches Elsa
+PASS: Explicit retry with the same key does not duplicate the fake write
+PASS: Generator rejects AmbiguousTask
+PASS: Generator rejects MultipleContractsTask
+PASS: Generator rejects ReservedTask
+PASS: Generator preserves nullable reference input annotations
+PASS: Generation is deterministic
+RUNTIME/GENERATOR: 16 checks passed.
+
+$ dotnet run --project src/Demo.Validation --no-build -- prepare /Users/naveenkumarpatil/Documents/ChatGPT/Elsa Abstraction/.validation-state/state-7r68e21k
+PASS: Workflow pauses at approval
+PASS: Invoice ran once before pause
+PASS: Old deployment has no v2 activity
+PREPARED: 3 checks; process 38958 exits with saved state.
+
+$ dotnet run --project src/Demo.Validation --no-build -- resume /Users/naveenkumarpatil/Documents/ChatGPT/Elsa Abstraction/.validation-state/state-7r68e21k
+PASS: Resume uses a different process
+PASS: Bookmark is consumed after resume
+PASS: Nested invoice and package data survive process restart
+PASS: Resume does not rerun the completed invoice task
+PASS: Saved v1 resolves to its original adapter after v2 is added
+PASS: Old and new contracts keep separate behavior
+RESUME/UPGRADE: 6 checks passed.
+
+PASS: Compiler rejects Input<string> for the typed Tax input (CS0029).
+
+$ dotnet run --project src/Demo.Elsa --no-build
+SCENARIO 1 — invoice from three earlier Elsa steps
+{
+  "Id": "INV-DEMO-001",
+  "Customer": {
+    "Id": "C-42",
+    "Email": "buyer@example.test",
+    "BillingAddress": {
+      "City": "Bengaluru",
+      "PostalCode": "560001"
+    }
+  },
+  "Lines": [
+    {
+      "Sku": "KEYBOARD",
+      "Quantity": 2,
+      "UnitPrice": 1500
+    },
+    {
+      "Sku": "MOUSE",
+      "Quantity": 1,
+      "UnitPrice": 500
+    }
+  ],
+  "Totals": {
+    "Subtotal": 3500,
+    "Tax": 630.00,
+    "GrandTotal": 4130.00,
+    "Currency": "INR"
+  }
+}
+SCENARIO 2 — shipment using invoice + warehouse + package list
+{
+  "InvoiceId": "INV-DEMO-001",
+  "Destination": {
+    "City": "Bengaluru",
+    "PostalCode": "560001"
+  },
+  "OriginCode": "WH-BLR",
+  "TotalWeightKg": 3.0,
+  "SignatureRequired": true,
+  "Packages": [
+    {
+      "Label": "Box A",
+      "WeightKg": 2.5,
+      "Size": {
+        "Length": 40,
+        "Width": 30,
+        "Height": 20
+      },
+      "Skus": [
+        "KEYBOARD"
+      ]
+    },
+    {
+      "Label": "Box B",
+      "WeightKg": 0.5,
+      "Size": {
+        "Length": 15,
+        "Width": 10,
+        "Height": 8
+      },
+      "Skus": [
+        "MOUSE"
+      ]
+    }
+  ]
+}
+PASS: Invoice totals and nested output
+PASS: Shipment receives prior nested output and computed rule
+PASS: Nested list and dimensions survive handover
+PASS: Elsa stops on invalid nested input and records its field path
+REJECTED: Lines[1].Quantity must be greater than zero.
+PASS: Same task runs outside Elsa
+PASS: Unknown nested SKU is rejected
+PASS: Cancellation reaches the independent task
+ALL 7 CHECKS PASSED
+
+OPTION 1 AUTOMATED VALIDATION PASSED. Studio evidence is documented separately.
