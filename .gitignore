@@ -4,3 +4,6 @@
 .validation-state/
 **/*.sqlite.db*
 **/App_Data/
+
+# Local document authoring and render previews
+/.artifact-work/

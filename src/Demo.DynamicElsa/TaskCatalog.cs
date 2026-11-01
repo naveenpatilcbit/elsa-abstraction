@@ -10,11 +10,15 @@ namespace Demo.DynamicElsa;
 // Explicit stable names and versions; only allow tasks deployed in this catalog.
 public sealed class TaskCatalog
 {
-    public IReadOnlyList<TaskDefinition> Definitions { get; } =
+    public TaskCatalog() : this(
     [
         new TaskDefinition<InvoiceInput, Invoice>("Demo.Tasks.CreateInvoice", "Create invoice", 1),
         new TaskDefinition<ShipmentInput, Shipment>("Demo.Tasks.PlanShipment", "Plan shipment", 1)
-    ];
+    ]) { }
+
+    public TaskCatalog(IReadOnlyList<TaskDefinition> definitions) => Definitions = definitions.ToArray();
+
+    public IReadOnlyList<TaskDefinition> Definitions { get; }
 
     // Require an exact version so an old flow does not silently use new behavior.
     public TaskDefinition Find(string type, int version) =>
@@ -33,7 +37,12 @@ public abstract class TaskDefinition(string typeName, string displayName, int ve
     protected ConstructorInfo InputConstructor { get; } = inputType.GetConstructors().Single();
     // Turn each constructor parameter into a field reader with the same C# type.
     public IReadOnlyList<TaskField> Fields { get; } = inputType.GetConstructors().Single().GetParameters()
-        .Select(p => (TaskField)Activator.CreateInstance(typeof(TaskField<>).MakeGenericType(p.ParameterType), p.Name!)!).ToArray();
+        .Select(p => (TaskField)Activator.CreateInstance(typeof(TaskField<>).MakeGenericType(p.ParameterType), p.Name!, AllowsNull(p))!).ToArray();
+
+    private static bool AllowsNull(ParameterInfo parameter) =>
+        Nullable.GetUnderlyingType(parameter.ParameterType) is not null ||
+        (!parameter.ParameterType.IsValueType &&
+         new NullabilityInfoContext().Create(parameter).ReadState == NullabilityState.Nullable);
 
     // Used while building the flow. Store Input<T> bindings, not evaluated values.
     public DynamicTaskActivity Bind(IReadOnlyDictionary<string, object> inputs, object output)
@@ -89,7 +98,7 @@ public abstract class TaskField(string name, Type type)
     public abstract void ValidateBinding(object value);
 }
 
-public sealed class TaskField<T>(string name) : TaskField(name, typeof(T))
+public sealed class TaskField<T>(string name, bool allowsNull) : TaskField(name, typeof(T))
 {
     // Build-time check: for example, Customer needs Input<Customer>, not Input<string>.
     public override void ValidateBinding(object value)
@@ -102,6 +111,8 @@ public sealed class TaskField<T>(string name) : TaskField(name, typeof(T))
     {
         if (!activity.SyntheticProperties.TryGetValue(Name, out var value) || value is not Input<T> input)
             throw new ArgumentException($"Missing or incorrectly typed input: {Name}.");
-        return context.Get(input) ?? throw new ArgumentException($"{Name} must not be null.");
+        var result = context.Get(input);
+        if (result is null && !allowsNull) throw new ArgumentException($"{Name} must not be null.");
+        return result;
     }
 }
